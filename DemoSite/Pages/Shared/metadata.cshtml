@@ -1,0 +1,50 @@
+﻿@using HCms.Content.ViewModels
+@model Fragment
+
+@{
+	bool cover = Model.Props.cover;
+	bool breadcrumbs = Model.Props.breadcrumbs;
+	bool title = Model.Props.title;
+	bool summary = Model.Props.summary;
+	Document modelDoc = ViewData["Document"] as Document;
+
+}
+
+@if (cover && !string.IsNullOrEmpty(modelDoc?.CoverPicture))
+{
+	<img src="@modelDoc.CoverPicture" class="img-fluid metadata-cover-picture @Model.BasicCssClass" alt="@modelDoc.Title" />
+}
+
+@if (breadcrumbs && (modelDoc?.Breadcrumbs?.Length ?? 0) > 1)
+{
+	<nav class="metadata-breadcrumbs @Model.BasicCssClass">
+		<ol class="breadcrumb">
+
+			<li class="breadcrumb-item"><a href="@modelDoc.Breadcrumbs[0].Path"><i class="fas fa-house"></i></a></li>
+			@for (int i = 1; i < modelDoc.Breadcrumbs.Length - 1; i++)
+			{
+				<li class="breadcrumb-item"><a href="@modelDoc.Breadcrumbs[i].Path">@modelDoc.Breadcrumbs[i].Title</a></li>
+			}
+			<li class="breadcrumb-item active" aria-current="page">
+				@modelDoc.Breadcrumbs[modelDoc.Breadcrumbs.Length - 1].Title
+			</li>
+		</ol>
+	</nav>
+}
+
+@if (title)
+{
+	if (Model.Attributes.TryGetValue("alt-title", out string t))
+	{
+	<h1 class="fw-bolder metadata-title @Model.BasicCssClass">@t</h1>
+	}
+	else
+	{
+	<h1 class="fw-bolder metadata-title @Model.BasicCssClass">@modelDoc?.Title</h1>
+	}
+}
+
+@if (summary)
+{
+	<div class="metadata-summary @Model.BasicCssClass">@Html.Raw(modelDoc?.Summary)</div>
+}

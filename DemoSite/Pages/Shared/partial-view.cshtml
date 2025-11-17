@@ -1,0 +1,10 @@
+﻿@model HCms.Content.ViewModels.Fragment
+
+@{
+	string name = Model.Props.name;
+
+	if (!string.IsNullOrEmpty(name))
+	{
+		@await Html.PartialAsync(name, Model, ViewData)
+	}
+}

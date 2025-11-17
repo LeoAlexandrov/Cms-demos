@@ -1,0 +1,8 @@
+﻿@model HCms.Content.ViewModels.Fragment
+
+@{
+	string id = Model.DomId;
+	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
+}
+
+<hr id="@id" class="hr @(Model.Props.look == "alternative" ? "hr-blurry" : null) @Model.BasicCssClass @extraFragmentClass" />

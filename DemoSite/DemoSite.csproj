@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	<TargetFramework>net8.0</TargetFramework>
+	<Nullable>disable</Nullable>
+	<ImplicitUsings>disable</ImplicitUsings>
+	<PublishTrimmed>False</PublishTrimmed>
+	<PublishAot>False</PublishAot>
+	<AssemblyVersion>0.4.1</AssemblyVersion>
+	<FileVersion>0.4.1</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="HCms" Version="1.0.20" />
+	<PackageReference Include="Markdig" Version="0.43.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+	<PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
+	<PackageReference Include="StackExchange.Redis" Version="2.9.32" />
+  </ItemGroup>
+
+  <Import Project="..\Common\Common.projitems" Label="Shared" />
+
+</Project>

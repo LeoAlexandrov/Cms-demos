@@ -1,0 +1,47 @@
+﻿@model ViewModels.CmsPageModel
+
+@{
+	var viewData = new ViewDataDictionary(ViewData)
+	{
+		{ "CmsPage", Model },
+		{ "Document", Model.Document }
+	};
+
+	var wideFragmentsFirst = Model.Document.Fragments
+		.TakeWhile(f => f.XmlName == "hero" || f.XmlName.StartsWith("carousel"))
+		.ToArray();
+
+	var wideFragmentsLast = Model.Document.Fragments
+		.Reverse()
+		.TakeWhile(f => f.XmlName == "hero" || f.XmlName.StartsWith("carousel"))
+		.Reverse()
+		.ToArray();
+
+	Range midRange = new Range(wideFragmentsFirst.Length, Model.Document.Fragments.Length - wideFragmentsLast.Length);
+
+	var midFragments = Model.Document.Fragments
+		.Take(midRange)
+		.ToArray();
+}
+
+<div class="container">
+	@foreach (var f in wideFragmentsFirst)
+	{
+		@await Html.PartialAsync(f.XmlName, f, viewData)
+	}
+	<div class="row gx-md-5">
+		<div class="col-12 col-lg-3">
+			@await Html.PartialAsync("_NavigationMenu", Model.NavigationMenu, viewData)
+		</div>
+		<div class="col-12 col-lg-9">
+			@foreach (var f in midFragments)
+			{
+				@await Html.PartialAsync(f.XmlName, f, viewData)
+			}
+		</div>
+	</div>
+	@foreach (var f in wideFragmentsLast)
+	{
+		@await Html.PartialAsync(f.XmlName, f, viewData)
+	}
+</div>

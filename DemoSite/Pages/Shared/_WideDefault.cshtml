@@ -1,0 +1,16 @@
+﻿@model ViewModels.CmsPageModel
+
+@{
+	var viewData = new ViewDataDictionary(ViewData)
+	{
+		{ "CmsPage", Model },
+		{ "Document", Model.Document }
+	};
+}
+
+<div class="container">
+@foreach (var f in Model.Document.Fragments)
+{
+	@await Html.PartialAsync(f.XmlName, f, viewData)
+}
+</div>

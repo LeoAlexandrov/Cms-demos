@@ -1,0 +1,23 @@
+﻿syntax = "proto3";
+
+package HCms.Content;
+
+message DocumentGrpcResult {
+	int32 Status = 1;
+	bytes Data = 2;
+}
+
+message DocumentGrpcRequest {
+	int32 Id = 1;
+	string Root = 2;
+	string Path = 3;
+	string PathMapper = 4;
+	bool Siblings = 5;
+	int32 ChildrenFromPos = 6;
+	int32 TakeChildren = 7;
+	repeated int32 AllowedStatus = 8;
+}
+
+service ContentGrpcService {
+  rpc GetDocument (DocumentGrpcRequest) returns (DocumentGrpcResult);
+}

@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Common\Common.shproj", "{D00F2719-CC90-45DD-8210-4CE9297393D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoSite", "DemoSite\DemoSite.csproj", "{C59F525B-507A-0B7F-0A71-CE9D9591A607}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Protos", "Protos\Protos.shproj", "{83524D98-D919-4605-8B8F-320050D30078}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcDemo", "GrpcDemo\GrpcDemo.csproj", "{F55331F7-CA99-4527-9396-A372D9BA65EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C59F525B-507A-0B7F-0A71-CE9D9591A607}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C59F525B-507A-0B7F-0A71-CE9D9591A607}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C59F525B-507A-0B7F-0A71-CE9D9591A607}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C59F525B-507A-0B7F-0A71-CE9D9591A607}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F55331F7-CA99-4527-9396-A372D9BA65EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F55331F7-CA99-4527-9396-A372D9BA65EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F55331F7-CA99-4527-9396-A372D9BA65EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F55331F7-CA99-4527-9396-A372D9BA65EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0EDC895A-4D3F-4216-B1F1-4CF3D6538449}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Protos\Protos.projitems*{83524d98-d919-4605-8b8f-320050d30078}*SharedItemsImports = 13
+		Common\Common.projitems*{c59f525b-507a-0b7f-0a71-ce9d9591a607}*SharedItemsImports = 5
+		Common\Common.projitems*{d00f2719-cc90-45dd-8210-4ce9297393d6}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal

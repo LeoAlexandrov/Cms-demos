@@ -1,0 +1,16 @@
+{
+	"RemoteRepo": {
+		"CmsApiHost": "https://localhost:7284",
+		"ApiKey": "123123",
+		"PathMapperName": "localdemo"
+	},
+
+	"Media": {
+		"Host": "https://localhost:7257/__debug-media__",
+		"StoragePath": "M:\\Cms-media"
+	},
+
+	"Webhook": {
+		"Secret": "1234567890Jth6e7a7ItLAWGn6RN"
+	}
+}
