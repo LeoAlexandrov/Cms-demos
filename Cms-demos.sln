@@ -11,6 +11,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Protos", "Protos\Protos.shp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcDemo", "GrpcDemo\GrpcDemo.csproj", "{F55331F7-CA99-4527-9396-A372D9BA65EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestDemo", "RestDemo\RestDemo.csproj", "{F82265F7-9D09-42F4-AD4E-66C579C9C6CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{F55331F7-CA99-4527-9396-A372D9BA65EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F55331F7-CA99-4527-9396-A372D9BA65EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F55331F7-CA99-4527-9396-A372D9BA65EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82265F7-9D09-42F4-AD4E-66C579C9C6CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82265F7-9D09-42F4-AD4E-66C579C9C6CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82265F7-9D09-42F4-AD4E-66C579C9C6CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82265F7-9D09-42F4-AD4E-66C579C9C6CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

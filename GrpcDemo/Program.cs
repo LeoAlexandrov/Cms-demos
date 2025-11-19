@@ -6,6 +6,7 @@ using System.Linq;
 using Grpc.Core;
 using Grpc.Net.Client;
 
+
 using HCms.Content;
 using HCms.Content.ViewModels;
 
@@ -15,7 +16,7 @@ namespace GrpcDemo
 	internal class Program
 	{
 
-		public static async Task Main(string[] args)
+		static async Task Main(string[] args)
 		{
 			const string apiKey = "123123";
 
@@ -30,7 +31,7 @@ namespace GrpcDemo
 				Credentials = ChannelCredentials.Create(new SslCredentials(), credentials)
 			};
 
-			// specifying this address assumes that CMS is running locally from VS
+			// specifying this address assumes that CMS is already running locally from VS
 			const string address = "https://localhost:7284";
 
 			using var channel = GrpcChannel.ForAddress(address, channelOptions);
