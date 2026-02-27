@@ -25,16 +25,14 @@ namespace DemoSite.Services
 		IAuthorizationService authorizationService,
 		ILogger<CmsContentService> logger)
 	{
-		public const string EVENT_DOC_CREATE = "on_doc_create";
-		public const string EVENT_DOC_CHANGE = "on_doc_change";
-		public const string EVENT_DOC_UPDATE = "on_doc_update";
-		public const string EVENT_DOC_DELETE = "on_doc_delete";
-		public const string EVENT_MEDIA_CREATE = "on_media_create";
-		public const string EVENT_MEDIA_DELETE = "on_media_delete";
-		public const string EVENT_USERS_CHANGE = "on_users_change";
-		public const string EVENT_XMLSCHEMA = "on_xmlschema_change";
-		public const string EVENT_ENABLE = "on_destination_enable";
-		public const string EVENT_DISABLE = "on_destination_disable";
+		const string EVENT_DOC_CREATE = "on_doc_create";
+		const string EVENT_DOC_CHANGE = "on_doc_change";
+		const string EVENT_DOC_UPDATE = "on_doc_update";
+		const string EVENT_DOC_DELETE = "on_doc_delete";
+		const string EVENT_USERS_CHANGE = "on_users_change";
+		const string EVENT_XMLSCHEMA = "on_xmlschema_change";
+		const string EVENT_ENABLE = "on_destination_enable";
+		const string EVENT_DISABLE = "on_destination_disable";
 
 
 		readonly IContentRepo _repo = repo;

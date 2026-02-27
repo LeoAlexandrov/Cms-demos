@@ -21,7 +21,8 @@ namespace DemoSite.Infrastructure.Middleware
 		/// <remarks>This method enables the application to serve static files from the directory specified in the
 		/// <c>StoragePath</c> property of the <paramref name="mediaConfig"/>. The <c>Host</c> property is used to determine
 		/// the request path for accessing the static files. If either <c>StoragePath</c> or <c>Host</c> is null or empty,
-		/// the method does nothing.</remarks>
+		/// the method does nothing. This method is intended mainly for local development and debugging when you don't have a 
+		/// web server on your machine to serve static content.</remarks>
 		/// <param name="builder">The <see cref="IApplicationBuilder"/> instance to configure.</param>
 		/// <param name="mediaConfig">The <see cref="IConfiguration"/> instance containing media settings.
 		/// The configuration must include valid values for <c>StoragePath</c> and <c>Host</c>.</param>

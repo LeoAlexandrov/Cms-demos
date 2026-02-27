@@ -85,15 +85,17 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
 {
 	services
 		.AddMemoryCache()
+		.Configure<S3Settings>(configuration.GetSection("Media"))
+		.AddSingleton<S3MediaStorage>()
 		/*
+		*/
 		// the line below configures demo site to use sql database as the content repository
 		.AddCmsContent(options => ConfigureDatabase(options, configuration), configuration["Media:Host"])
-		*/
 		/*
 		// two lines below configure demo site to use remote cms content repository
-		*/
 		.AddHttpClient()
 		.AddCmsContent(configuration.GetSection("RemoteRepo"))
+		*/
 		.AddLocalization(options => options.ResourcesPath = "Resources")
 		.AddRazorPages(options => options.Conventions.AddPageRoute("/index", "{*url}"))
 		.AddViewLocalization();
@@ -128,7 +130,7 @@ void ConfigureApp(WebApplication app)
 
 	app.UseForwardedHeaders()
 #if DEBUG
-		// assumed production deployment configuration is the app running behind a reverse proxy with TLS termination
+		// assumed production configuration is the app running behind a reverse proxy with TLS termination
 		.UseHttpsRedirection()
 #endif
 		.UseStaticFiles()
@@ -139,16 +141,37 @@ void ConfigureApp(WebApplication app)
 		.UseAuthorization()
 		.UseCmsContent();
 
-	app.MapPost("/cms-webhook-handler",
-		(HCms.Dto.EventPayload model, CmsContentService cmsService, IConfiguration configuration, HttpRequest request) =>
-		{
-			string secret = configuration["Webhook:Secret"];
+	app.MapPost(
+			"/cms-webhook-handler", // this endpoint can be removed if you use rabbit or redis pub/sub for event notifications
+			(HCms.Dto.EventPayload model, CmsContentService cmsService, S3MediaStorage s3Storage, IConfiguration configuration, HttpRequest request) =>
+			{
+				string secret = configuration["Webhook:Secret"];
 
-			if (secret == request.Headers["X-Secret"])
+				if (secret != request.Headers["X-Secret"])
+					return Results.Unauthorized();
+
 				cmsService.UpdateCache(model);
+				s3Storage.UpdateCache(model);
 
-			return Results.NoContent();
-		});
+				return Results.NoContent();
+			});
+
+	app.MapGet(
+			"/__s3media__/{**path}", // this endpoint can be removed if you don't use S3 media storage
+			async (string path, S3MediaStorage storage) =>
+			{
+				var result = await storage.GetMediaFileAsync(path);
+
+				return result.Status switch
+				{
+					S3MediaStorage.Status.NotFound => Results.NotFound(),
+					S3MediaStorage.Status.OtherProblem => Results.Problem(),
+					_ => result.Content == null ?
+						Results.File(result.FileName, contentType: result.ContentType, enableRangeProcessing: true) :
+						Results.File(result.Content, contentType: result.ContentType, fileDownloadName: result.DownloadName, enableRangeProcessing: true)
+				};
+			});
+		
 
 	app.UseStatusCodePagesWithReExecute("/Error/{0}");
 	app.MapRazorPages();

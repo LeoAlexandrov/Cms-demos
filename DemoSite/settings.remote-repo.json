@@ -7,7 +7,7 @@
 
 	"Media": {
 		"Host": "https://localhost:7257/__debug-media__",
-		"StoragePath": "M:\\Cms-media"
+		"StoragePath": "M:\\Cms-media\\demosite"
 	},
 
 	"Webhook": {

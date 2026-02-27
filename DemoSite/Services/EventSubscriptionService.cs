@@ -71,6 +71,8 @@ namespace DemoSite.Services
 			redisSubscriber = redisConnection.GetSubscriber();
 
 			await redisSubscriber.SubscribeAsync(redisChannel, RedisEventHandler);
+
+			_logger.LogInformation("Subscribed to Redis Pub/Sub.");
 		}
 
 		async Task SubscribeRabbit(CancellationToken cancellationToken)
@@ -133,6 +135,8 @@ namespace DemoSite.Services
 			rabbitConsumer.ReceivedAsync += RabbitEventHandler;
 
 			await rabbitChannel.BasicConsumeAsync(queueName, autoAck: true, consumer: rabbitConsumer);
+
+			_logger.LogInformation("Subscribed to RabbitMQ.");
 		}
 
 
@@ -144,37 +148,41 @@ namespace DemoSite.Services
 			if (!string.IsNullOrEmpty(rabbitHost))
 				await SubscribeRabbit(cancellationToken);
 
-			_logger.LogInformation("Event subscription service has been started");
-
-			return;
+			_logger.LogInformation("Event subscription service has been started.");
 		}
 
 		public void RedisEventHandler(RedisChannel channel, RedisValue message)
 		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
-				var cmsService = scope.ServiceProvider.GetRequiredService<CmsContentService>();
 				var payload = System.Text.Json.JsonSerializer.Deserialize<EventPayload>(message);
 
-				cmsService.UpdateCache(payload);
+				var cmsService = scope.ServiceProvider.GetService<CmsContentService>();
+				cmsService?.UpdateCache(payload);
+
+				var s3Service = scope.ServiceProvider.GetService<S3MediaStorage>();
+				s3Service?.UpdateCache(payload);
 			}
 
-			_logger.LogInformation("Message received from redis pubsub");
+			_logger.LogInformation("Message received from Redis Pub/Sub.");
 		}
 
 		public Task RabbitEventHandler(object sender, BasicDeliverEventArgs ea)
 		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
-				var cmsService = scope.ServiceProvider.GetRequiredService<CmsContentService>();
 				byte[] body = ea.Body.ToArray();
 				var message = Encoding.UTF8.GetString(body);
 				var payload = System.Text.Json.JsonSerializer.Deserialize<EventPayload>(message);
 
-				cmsService.UpdateCache(payload);
+				var cmsService = scope.ServiceProvider.GetService<CmsContentService>();
+				cmsService?.UpdateCache(payload);
+
+				var s3Service = scope.ServiceProvider.GetService<S3MediaStorage>();
+				s3Service?.UpdateCache(payload);
 			}
 
-			_logger.LogInformation("Message received from rabbit mq");
+			_logger.LogInformation("Message received from RabbitMQ.");
 
 			return Task.CompletedTask;
 		}
@@ -191,7 +199,7 @@ namespace DemoSite.Services
 				await rabbitConnection.CloseAsync(cancellationToken);
 			}
 
-			_logger.LogInformation("Event subscription service has been stopped");
+			_logger.LogInformation("Event subscription service has been stopped.");
 		}
 
 		public void Dispose()

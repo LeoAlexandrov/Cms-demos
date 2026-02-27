@@ -83,7 +83,8 @@ namespace DemoSite.Services
 
 			if (media)
 			{
-				var mediaUri = new Uri(baseMediaHost, path);
+				int i = path.IndexOf('/'); // there is the key of media storage place or s3 bucket before the first '/', we ignore it in this demo
+				var mediaUri = new Uri(baseMediaHost, path[(i + 1)..]);
 				return mediaUri.ToString();
 			}
 
