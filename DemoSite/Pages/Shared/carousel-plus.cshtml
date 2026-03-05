@@ -3,8 +3,6 @@
 
 @{
 	string id = Model.DomId;
-	int activeIdx = -1;
-
 	int interval = Model.Props.appearance.interval;
 	string sInterval = interval == 0 ? "false" : interval.ToString();
 
@@ -14,6 +12,21 @@
 	int m = Model.Children != null ? Model.Children.Length : 0;
 
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
+
+	int activeIdx = -1;
+
+	for (int i = 0; i < n; i++)
+	{
+		if (items[i].active && activeIdx < 0)
+		{
+			activeIdx = i;
+		}
+	}
+
+	if (activeIdx < 0)
+	{
+		activeIdx = 0;
+	}
 }
 
 
@@ -36,17 +49,7 @@
 	<div class="carousel-indicators">
 		@for (int i = 0; i < n; i++)
 		{
-			if (items[i].active && activeIdx < 0)
-			{
-				activeIdx = i;
-			}
-
 			<button type="button" data-mdb-target="#@id" data-mdb-slide-to="@i" class="@(activeIdx == i ? "active" : null)" aria-current="true"></button>
-
-			if (activeIdx < 0)
-			{
-				activeIdx = 0;
-			}
 		}
 	</div>
 
