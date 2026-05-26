@@ -18,6 +18,12 @@ message DocumentGrpcRequest {
 	repeated int32 AllowedStatus = 8;
 }
 
+message ListGrpcRequest	{
+	int32 Id = 1;
+	string PathMapper = 2;
+}
+
 service ContentGrpcService {
   rpc GetDocument (DocumentGrpcRequest) returns (DocumentGrpcResult);
+  rpc GetList (ListGrpcRequest) returns (DocumentGrpcResult);
 }

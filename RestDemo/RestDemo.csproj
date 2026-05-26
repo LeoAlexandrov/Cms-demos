@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HCms.Content.ViewModels" Version="1.0.21" />
-    <PackageReference Include="MessagePack" Version="3.1.4" />
+    <PackageReference Include="HCms.Content.ViewModels" Version="1.0.22" />
+    <PackageReference Include="MessagePack" Version="3.1.6" />
   </ItemGroup>
 
 </Project>

@@ -54,6 +54,14 @@ namespace GrpcDemo
 				var doc = MessagePack.MessagePackSerializer.Deserialize<Document>(reply.Data.ToArray());
 				string js = JsonSerializer.Serialize(doc, new JsonSerializerOptions { WriteIndented = true });
 
+				/*
+				var request = new ListGrpcRequest() { Id = id, PathMapper = "demo" };
+
+				var reply = await client.GetListAsync(request);
+				var docs = MessagePack.MessagePackSerializer.Deserialize<Document[]>(reply.Data.ToArray());
+				string js = JsonSerializer.Serialize(docs, new JsonSerializerOptions { WriteIndented = true });
+				*/
+
 				Console.WriteLine(js);
 				Console.WriteLine("--------------------------");
 			}

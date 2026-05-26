@@ -58,7 +58,6 @@ namespace RestDemo
 			const bool siblings = true;
 			const string ast = "ast=1&ast=2";
 
-			Document doc;
 			HttpClient client = new();
 
 			while (true)
@@ -70,12 +69,17 @@ namespace RestDemo
 					break;
 
 				string url = $"{apiHost}/api/v1/content/doc/{id}?pm={pathMapperName}&cfp={childrenFromPos}&tc={takeChildren}&sib={siblings}&{ast}";
+				//string url = $"{apiHost}/api/v1/content/list/{id}?pm={pathMapperName}";
 
 				try
 				{
-					doc = await RestRequest<Document>(client, url, apiKey, MSGPACK_MEDIA_TYPE);
-
+					var doc = await RestRequest<Document>(client, url, apiKey, MSGPACK_MEDIA_TYPE);
 					string js = JsonSerializer.Serialize(doc, new JsonSerializerOptions { WriteIndented = true });
+
+					/*
+					var docs = await RestRequest<Document[]>(client, url, apiKey, MSGPACK_MEDIA_TYPE);
+					string js = JsonSerializer.Serialize(docs, new JsonSerializerOptions { WriteIndented = true });
+					*/
 
 					Console.WriteLine(js);
 					Console.WriteLine("--------------------------");
