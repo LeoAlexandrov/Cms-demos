@@ -26,17 +26,17 @@
 			<tr>
 				<td>Float number</td>
 				<td>@halfPi</td>
-				<td>@string.Format(new NumberFormatInfo(), "{0}", halfPi)</td>
+				<td>@string.Format(CultureInfo.InvariantCulture, "{0}", halfPi)</td>
 			</tr>
 			<tr>
 				<td>Money</td>
 				<td>@string.Format("{0:C}", sum)</td>
-				<td>@string.Format(new NumberFormatInfo(), "{0:C}", sum)</td>
+				<td>@string.Format(CultureInfo.InvariantCulture, "{0:C}", sum)</td>
 			</tr>
 			<tr>
 				<td>Date</td>
 				<td>@string.Format("{0:f}", date)</td>
-				<td>@string.Format(new DateTimeFormatInfo(), "{0:f}", date)</td>
+				<td>@string.Format(CultureInfo.InvariantCulture, "{0:f}", date)</td>
 			</tr>
 		</tbody>
 	</table>
