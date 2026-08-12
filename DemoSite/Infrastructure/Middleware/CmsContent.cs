@@ -169,8 +169,6 @@ namespace DemoSite.Infrastructure.Middleware
 							 * No need to await, we can return it immediately. 
 							 */
 
-							awaitedResult.Cts.Dispose();
-
 							context.Response.Headers.ContentType = "text/html; charset=utf-8";
 
 							await context.Response.Body.WriteAsync(ar.Body);
@@ -185,7 +183,6 @@ namespace DemoSite.Infrastructure.Middleware
 							 * of the returned element is cancelled by the rendering thread.
 							 */
 
-							awaitedResult.Cts.Dispose();
 							awaitedResult.Cts = null;
 
 							try
@@ -224,7 +221,23 @@ namespace DemoSite.Infrastructure.Middleware
 						p > 0 ? (p-1) * paginatedDocsCount : 0;
 
 
-					var doc = await content.GetDocument(cmsRoot, cmsPath, position, paginatedDocsCount, context.User);
+					HCms.Content.ViewModels.Document doc;
+
+					try
+					{
+						doc = await content.GetDocument(cmsRoot, cmsPath, position, paginatedDocsCount, context.User, context.RequestAborted);
+					}
+					catch (OperationCanceledException)
+					{
+						if (awaitedResult.Cts != null)
+						{
+							// Cancel the CancellationToken and give a signal to awaiting threads not to wait anymore. 
+							awaitedResult.Cts.Cancel();
+							AwaitedResults.TryRemove(cacheKey, out _);
+						}
+
+						return;
+					}
 
 					SetCulture(doc?.Language);
 
@@ -266,13 +279,9 @@ namespace DemoSite.Infrastructure.Middleware
 
 					if (awaitedResult.Cts != null)
 					{
-						/* Cancel the CancellationToken and 
-						 * give a signal to awaiting threads that the page has been rendered. 
-						 */
-
+						// Cancel the CancellationToken and give a signal to awaiting threads that the page has been rendered. 
 						awaitedResult.Cts.Cancel();
 						AwaitedResults.TryRemove(cacheKey, out _);
-						awaitedResult.Cts.Dispose();
 					}
 
 					// Finally write the body to the response.

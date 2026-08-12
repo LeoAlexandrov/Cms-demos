@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 using DemoSite.Services;
+
 
 namespace DemoSite.Pages
 {
@@ -12,9 +15,9 @@ namespace DemoSite.Pages
 
 		public string HtmlContent { get; set; }
 
-		public async Task<IActionResult> OnGet()
+		public async Task<IActionResult> OnGet(CancellationToken ct)
 		{
-			var doc = await _content.Repo.GetDocument("misc-docs", "/privacy", 0, -1, false, null, true);
+			var doc = await _content.Repo.GetDocument("misc-docs", "/privacy", 0, -1, false, null, true, ct);
 
 			if (doc == null)
 				return NotFound();

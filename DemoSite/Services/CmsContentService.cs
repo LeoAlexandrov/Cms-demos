@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
@@ -139,7 +140,7 @@ namespace DemoSite.Services
 		/// <returns>A <see cref="ValueTask{TResult}"/> that resolves to an <see cref="AuthResult"/> indicating the 
 		/// authorization outcome: <see cref="AuthResult.Unauthorized"/> if the user is not authenticated, 
 		/// <see cref="AuthResult.Forbidden"/> if the user lacks a valid login or role, or <see cref="AuthResult.Success"/> if the user is authorized.</returns>
-		async ValueTask<AuthResult> AuthorizeEditor(ClaimsPrincipal user)
+		async ValueTask<AuthResult> AuthorizeEditor(ClaimsPrincipal user, CancellationToken ct)
 		{
 			if (!user.Identity.IsAuthenticated)
 				return AuthResult.Unauthorized;
@@ -149,7 +150,7 @@ namespace DemoSite.Services
 			if (string.IsNullOrEmpty(login))
 				return AuthResult.Forbidden;
 
-			string role = await _repo.UserRole(login);
+			string role = await _repo.UserRole(login, ct);
 
 			return string.IsNullOrEmpty(role) ? AuthResult.Forbidden : AuthResult.Success;
 		}
@@ -166,13 +167,13 @@ namespace DemoSite.Services
 		/// <param name="user">The user whose authorization level determines ability to access content of documents with status that differs from 'published'.</param>
 		/// <returns>A <see cref="Document"/> object representing the requested document, including its children and siblings.
 		/// Returns <c>null</c> if the document is not found or the user lacks sufficient permissions.</returns>
-		public async Task<Document> GetDocument(string cmsRoot, string cmsPath, int childPos, int takeChildren, ClaimsPrincipal user)
+		public async Task<Document> GetDocument(string cmsRoot, string cmsPath, int childPos, int takeChildren, ClaimsPrincipal user, CancellationToken ct)
 		{
-			int[] allowedStatus = await AuthorizeEditor(user) == AuthResult.Success ? 
+			int[] allowedStatus = await AuthorizeEditor(user, ct) == AuthResult.Success ? 
 				[1, 2] : // published and drafts with 'InReview' status 
 				[1]; // only published documents
 
-			var doc = await _repo.GetDocument(cmsRoot, cmsPath, childPos, takeChildren, true, allowedStatus, false);
+			var doc = await _repo.GetDocument(cmsRoot, cmsPath, childPos, takeChildren, true, allowedStatus, false, ct);
 
 			RequestedDocument = doc;
 
