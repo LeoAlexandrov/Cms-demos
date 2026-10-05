@@ -51,7 +51,7 @@ namespace RestDemo
 		static async Task Main(string[] args)
 		{
 			const string apiKey = "123123";
-			const string apiHost = "https://admin.h-cms.net";
+			const string apiHost = "https://admin.h-cms.net"; //"https://localhost:7284";
 			const string pathMapperName = "demo";
 			const int childrenFromPos = 0;
 			const int takeChildren = 10;
@@ -70,6 +70,7 @@ namespace RestDemo
 
 				string url = $"{apiHost}/api/v1/content/doc/{id}?pm={pathMapperName}&cfp={childrenFromPos}&tc={takeChildren}&sib={siblings}&{ast}";
 				//string url = $"{apiHost}/api/v1/content/list/{id}?pm={pathMapperName}";
+				//string url = $"{apiHost}/api/v1/content/docs/{id}?pm={pathMapperName}&fp=5&t=5&rev=true&ast=1";
 
 				try
 				{
@@ -81,15 +82,24 @@ namespace RestDemo
 					string js = JsonSerializer.Serialize(docs, new JsonSerializerOptions { WriteIndented = true });
 					*/
 
+					/*
+					var docs = await RestRequest<Selection>(client, url, apiKey, MSGPACK_MEDIA_TYPE);
+					string js = JsonSerializer.Serialize(docs, new JsonSerializerOptions { WriteIndented = true });
+					*/
+
 					Console.WriteLine(js);
+
+					//foreach (var f in doc.AllFragments)
+					//	Console.WriteLine($"Fragment: {f.Name}, XmlName: {f.XmlName}");
+
 					Console.WriteLine("--------------------------");
 				}
 				catch (Exception ex)
 				{
 					Console.WriteLine($"Error: {ex.Message}");
 				}
-			}
 
+			}
 
 			Console.WriteLine("Shutting down");
 		}

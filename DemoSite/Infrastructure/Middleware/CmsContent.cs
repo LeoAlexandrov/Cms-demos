@@ -218,7 +218,7 @@ namespace DemoSite.Infrastructure.Middleware
 
 					int position = context.Request.Query.TryGetValue("p", out var qp) && 
 						int.TryParse(qp, out int p) && 
-						p > 0 ? (p-1) * paginatedDocsCount : 0;
+						p > 1 ? (p-1) * paginatedDocsCount : 0;
 
 
 					HCms.Content.ViewModels.Document doc;

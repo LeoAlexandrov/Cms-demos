@@ -173,7 +173,34 @@ namespace DemoSite.Services
 				[1, 2] : // published and drafts with 'InReview' status 
 				[1]; // only published documents
 
+			/*
 			var doc = await _repo.GetDocument(cmsRoot, cmsPath, childPos, takeChildren, true, allowedStatus, false, ct);
+			*/
+
+			var doc = await _repo.GetDocument(cmsRoot, cmsPath, -1, -1, false, allowedStatus, false, ct);
+
+			var children = await _repo.GetDocuments(new SelectionSettings()
+			{
+				ParentId = doc.Id,
+				AllowedStatus = allowedStatus,
+				ReverseOrder = doc.Attributes.ContainsKey("blog")
+			}, childPos, takeChildren, ct);
+
+			doc.Children = children.List;
+			doc.ChildrenTaken = children.TakeCount;
+			doc.ChildrenTakePosition = children.TakePosition;
+			doc.TotalChildrenCount = children.TotalCount;
+
+			if (doc.ParentId != 0)
+			{
+				var siblings = await _repo.GetDocuments(new SelectionSettings()
+				{
+					ParentId = doc.ParentId,
+					AllowedStatus = allowedStatus
+				}, -1, -1, ct);
+
+				doc.Siblings = siblings.List;
+			}
 
 			RequestedDocument = doc;
 

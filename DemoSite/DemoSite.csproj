@@ -11,13 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AWSSDK.S3" Version="4.0.102.1" />
-	<PackageReference Include="HCms" Version="1.0.25" />
-	<PackageReference Include="Markdig" Version="1.3.2" />
+	<PackageReference Include="AWSSDK.S3" Version="4.0.103.4" />
+	<PackageReference Include="HCms" Version="1.0.26" />
+	<PackageReference Include="Markdig" Version="1.4.0" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.19" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.19" />
 	<PackageReference Include="RabbitMQ.Client" Version="7.2.2" />
-	<PackageReference Include="StackExchange.Redis" Version="3.1.13" />
+	<PackageReference Include="StackExchange.Redis" Version="3.3.1" />
   </ItemGroup>
 
   <Import Project="..\Common\Common.projitems" Label="Shared" />

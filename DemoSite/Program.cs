@@ -54,7 +54,8 @@ void ConfigureWebHost(IWebHostBuilder webHostBuilder)
 	 */
 
 	webHostBuilder.ConfigureKestrel((context, options) =>
-		options.Configure(context.Configuration.GetSection("Kestrel")));
+		options.Configure(context.Configuration.GetSection("Kestrel"))
+	);
 
 }
 
@@ -88,8 +89,8 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
 		.Configure<S3Settings>(configuration.GetSection("Media"))
 		.AddSingleton<S3MediaStorage>()
 		/*
-		*/
 		// the line below configures demo site to use sql database as the content repository
+		*/
 		.AddCmsContent(options => ConfigureDatabase(options, configuration), configuration["Media:Host"])
 		/*
 		// two lines below configure demo site to use remote cms content repository

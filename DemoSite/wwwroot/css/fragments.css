@@ -8,6 +8,10 @@
 	font-family: 'Montserrat', sans-serif;
 }
 
+.metadata-pubdate {
+	margin-top: 24px;
+}
+
 .row-fragment {
 	margin-top: 0px;
 }

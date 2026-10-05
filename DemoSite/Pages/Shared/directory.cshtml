@@ -9,6 +9,7 @@
 	string title = Model.Props.title;
 	string look = Model.Props.look;
 	string moreLabel = Model.Attributes?.GetValueOrDefault("MoreButtonLabel");
+	bool pubDates = Model.Props.pubdates;
 
 	if (string.IsNullOrEmpty(moreLabel))
 		moreLabel = SharedLocalizer["More"].Value;
@@ -32,7 +33,17 @@
 	<ul class="list-group list-group-light">
 		@foreach (var doc in docs)
 		{
-		<li class="list-group-item"><a href="@doc.Url">@doc.Title</a></li>
+		<li class="list-group-item">
+			@if (pubDates)
+			{
+			<div class="small text-muted">@doc.PublishedAt.ToString("d")</div>
+			<div><a href="@doc.Url">@doc.Title</a></div>
+			}
+			else
+			{
+			<a href="@doc.Url">@doc.Title</a>
+			}
+		</li>
 		}
 	</ul>
 }
@@ -44,7 +55,17 @@ else if (look == "expandable")
 			<div class="accordion-item">
 				<h2 id="@id-heading-@i" class="accordion-header">
 					<button data-mdb-collapse-init class="accordion-button" type="button" data-mdb-target="#@id-body-@i">
+						@if (pubDates)
+						{
+						<span class="d-flex flex-column text-start">
+							<span class="small text-muted mb-2">@docs[i].PublishedAt.ToString("d")</span>
+							<span>@docs[i].Title</span>
+						</span>
+						}
+						else
+						{
 						@docs[i].Title
+						}
 					</button>
 				</h2>
 				<div id="@id-body-@i" class="accordion-collapse collapse">
@@ -79,6 +100,10 @@ else if (look == "grid" || look == "blog")
 							</div>
 						}
 						<div class="card-body">
+							@if (pubDates)
+							{
+							<div class="small text-muted mb-2">@doc.PublishedAt.ToString("d")</div>
+							}
 							<h3 class="card-title>">@doc.Title</h3>
 							<div class="card-text">@Html.Raw(doc.Summary)</div>
 						</div>

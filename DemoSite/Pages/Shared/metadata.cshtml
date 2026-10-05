@@ -5,6 +5,7 @@
 	bool cover = Model.Props.cover;
 	bool breadcrumbs = Model.Props.breadcrumbs;
 	bool title = Model.Props.title;
+	bool pubdate = Model.Props.pubdate;
 	bool summary = Model.Props.summary;
 	Document modelDoc = ViewData["Document"] as Document;
 
@@ -30,6 +31,13 @@
 			</li>
 		</ol>
 	</nav>
+}
+
+@if (pubdate)
+{
+	<div class="metadata-pubdate text-muted @Model.BasicCssClass">
+		@modelDoc?.PublishedAt.ToString("D")
+	</div>
 }
 
 @if (title)
