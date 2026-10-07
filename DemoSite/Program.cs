@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -85,7 +86,9 @@ void ConfigureDatabase(DbContextOptionsBuilder options, IConfiguration configura
 void ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
 {
 	services
-		.AddMemoryCache()
+		.AddHybridCache();
+
+	services
 		.Configure<S3Settings>(configuration.GetSection("Media"))
 		.AddSingleton<S3MediaStorage>()
 		/*
@@ -144,14 +147,14 @@ void ConfigureApp(WebApplication app)
 
 	app.MapPost(
 			"/cms-webhook-handler", // this endpoint can be removed if you use rabbit or redis pub/sub for event notifications
-			(HCms.Dto.EventPayload model, CmsContentService cmsService, S3MediaStorage s3Storage, IConfiguration configuration, HttpRequest request) =>
+			async (HCms.Dto.EventPayload model, CmsContentService cmsService, S3MediaStorage s3Storage, IConfiguration configuration, HttpRequest request) =>
 			{
 				string secret = configuration["Webhook:Secret"];
 
 				if (secret != request.Headers["X-Secret"])
 					return Results.Unauthorized();
 
-				cmsService.UpdateCache(model);
+				await cmsService.UpdateCache(model);
 				s3Storage.UpdateCache(model);
 
 				return Results.NoContent();

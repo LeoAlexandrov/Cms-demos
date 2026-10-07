@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 using DemoSite.Services;
@@ -24,18 +24,31 @@ namespace DemoSite.Infrastructure.Middleware
 	/// </summary>
 	/// <remarks>The service responsible for this is the injected, scoped <see cref="CmsContentService"/>,
 	/// used then in razor pages.</remarks>
-	public class CmsContentMiddleware(RequestDelegate next, ILogger<CmsContentMiddleware> logger)
+	public class CmsContentMiddleware(RequestDelegate next, HybridCache cache, ILogger<CmsContentMiddleware> logger)
 	{
-		readonly static ConcurrentDictionary<string, AwaitedResult> AwaitedResults = new();
-		
+		readonly static HybridCacheEntryOptions CacheWriteOptions = new()
+		{
+			Expiration = TimeSpan.FromDays(60),
+			LocalCacheExpiration = TimeSpan.FromDays(30)
+		};
+
+		readonly static HybridCacheEntryOptions CacheReadThroughOptions = new()
+		{
+			Flags = HybridCacheEntryFlags.DisableLocalCacheWrite | HybridCacheEntryFlags.DisableDistributedCacheWrite
+		};
+
+		readonly static string[] tags = [CmsContentService.CMS_CACHE_TAG];
+
 		readonly RequestDelegate _next = next;
+		readonly HybridCache _cache = cache;
 		readonly ILogger<CmsContentMiddleware> _logger = logger;
 
-		class AwaitedResult
+		struct RenderedDocument
 		{
-			public CancellationTokenSource Cts { get; set; }
+			public HCms.Content.ViewModels.Document Document { get; set; }
 			public byte[] Body { get; set; }
 		}
+
 
 		/// <summary>
 		/// Removes duplicate slashes, trailing slash, and converts to lowercase.
@@ -112,182 +125,83 @@ namespace DemoSite.Infrastructure.Middleware
 		{
 			var routeData = context.GetRouteData();
 
-			if (context.Request.Method == "GET" &&
+			if (context.Request.Method == HttpMethods.Get &&
 				routeData.Values.TryGetValue("page", out object val) &&
 				val is string sVal &&
 				sVal == "/Index")
 			{
 				bool allowCaching = string.IsNullOrEmpty(context.Request.QueryString.Value);
 
-				var cache = content.Cache;
 				string host = context.Request.Host.Value;
 				string path = CleanPath(context.Request.Path.Value);
 				string theme = Theme(context);
+
 				var (cmsRoot, cmsPath) = MapPathBack(host, path);
+
 				string cacheKey = $"{cmsRoot}-{theme}-{cmsPath}";
 
-				if (allowCaching && cache.TryGetValue(cacheKey, out byte[] body))
+				int paginatedDocsCount = 5; // hardcoded for now, better to move it to the config or to take it from query params
+
+				int position = context.Request.Query.TryGetValue("p", out var qp) &&
+					int.TryParse(qp, out int p) &&
+					p > 1 ? (p - 1) * paginatedDocsCount : 0;
+
+
+				async Task<RenderedDocument> getAndRenderDocument(CancellationToken ct)
 				{
-					/* If the cache contains rendered body of the entire page,
-					 * we return it immediately short-circuiting the pipeline.
-					 */
-#if DEBUG
-					_logger.LogInformation("Cache hit '{cacheKey}'", cacheKey);
-#endif
-
-					context.Response.Headers.ContentType = "text/html; charset=utf-8";
-
-					await context.Response.Body.WriteAsync(body);
-				}
-				else
-				{
-					/* Otherwise we need to render the page. */
-
-					AwaitedResult awaitedResult = new();
-
-					if (allowCaching) 
-					{
-						/* This code branch prevents/minimizes 'cache stampede'.
-						   If some thread has already started rendering the page requested, 
-						   the 'AwaitedResults' static concurrent dictionary
-						   will contain an element with the 'cacheKey' key.
-						   This element has CancellationToken which will be cancelled by that thread, 
-						   and byte array with the rendered page body.
-						   If no one has started rendering the page yet, 
-						   this thread adds its own element 'awaitedResult' to the dictionary,
-						   and manages the CancellationToken by itself.
-						 */
-
-						awaitedResult.Cts = new();
-
-						var ar = AwaitedResults.GetOrAdd(cacheKey, awaitedResult);
-
-						if (ar.Body != null)
-						{
-							/* The page has been rendered by another thread, 
-							 * because GetOrAdd above returned definitely different element with the 'Body' already set.
-							 * No need to await, we can return it immediately. 
-							 */
-
-							context.Response.Headers.ContentType = "text/html; charset=utf-8";
-
-							await context.Response.Body.WriteAsync(ar.Body);
-							return;
-						}
-
-						if (ar != awaitedResult)
-						{
-							/* The page is still being rendered by another thread
-							 * because GetOrAdd above returned different element.
-							 * We wait for 100 ms or until the CancellationToken 
-							 * of the returned element is cancelled by the rendering thread.
-							 */
-
-							awaitedResult.Cts = null;
-
-							try
-							{
-								await Task.Delay(100, ar.Cts.Token);
-							}
-							catch (TaskCanceledException)
-							{
-								/* The CancellationToken was cancelled by another thread.
-								 * We check if the page has been cached by testing the 'ar.Body' against null.
-								 * 'ar.Body's and cached values are the same.
-								 */
-
-								if (ar.Body != null)
-								{
-									// Return rendered body immediately.
-
-									context.Response.Headers.ContentType = "text/html; charset=utf-8";
-
-									await context.Response.Body.WriteAsync(ar.Body);
-									return;
-								}
-							}
-						}
-					}
-
-					/* If execution reached this point, 
-					 * it means that the page is not in the cache
-					 * and this thread needs to render it.
-					 */
-
-					int paginatedDocsCount = 5; // hardcoded for now, better to move it to the config or to take it from query params
-
-					int position = context.Request.Query.TryGetValue("p", out var qp) && 
-						int.TryParse(qp, out int p) && 
-						p > 1 ? (p-1) * paginatedDocsCount : 0;
-
-
-					HCms.Content.ViewModels.Document doc;
-
-					try
-					{
-						doc = await content.GetDocument(cmsRoot, cmsPath, position, paginatedDocsCount, context.User, context.RequestAborted);
-					}
-					catch (OperationCanceledException)
-					{
-						if (awaitedResult.Cts != null)
-						{
-							// Cancel the CancellationToken and give a signal to awaiting threads not to wait anymore. 
-							awaitedResult.Cts.Cancel();
-							AwaitedResults.TryRemove(cacheKey, out _);
-						}
-
-						return;
-					}
+					var doc = await content.GetDocument(cmsRoot, cmsPath, position, paginatedDocsCount, context.User, ct);
 
 					SetCulture(doc?.Language);
 
-					var originalBody = context.Response.Body;
-					using var newBody = new MemoryStream();
-
-					context.Response.Body = newBody;
+					using var ms = new MemoryStream();
+					context.Response.Body = ms;
 
 					await _next(context);
 
-					context.Response.Body = originalBody;
+					var body = new byte[ms.Length];
 
-					newBody.Seek(0, SeekOrigin.Begin);
-					body = new byte[newBody.Length];
-					newBody.Read(body, 0, body.Length);
+					ms.Seek(0, SeekOrigin.Begin);
+					ms.Read(body, 0, body.Length);
 
-					/* Now we have the entire page body in the 'body' variable
-					   which then will be written to the original response body and cached if possible.
-					   Caching is possible if:
-					   - the response status code is 200 OK,
-					   - the document is published (Status == 1),
-					   - the document is not protected by authorization,
-					   - the response does not contain Cache-Control header prohibiting caching.
-					 */
+					return new() { Document = doc, Body = body };
+				}
+
+				async ValueTask<byte[]> factory(CancellationToken ct)
+				{
+					var renderedDoc = await getAndRenderDocument(ct);
 
 					allowCaching &= context.Response.StatusCode == (int)HttpStatusCode.OK &&
-						doc.Status == 1 &&
-						!doc.AuthRequired &&
+						renderedDoc.Document.Status == 1 &&
+						!renderedDoc.Document.AuthRequired &&
 						(!context.Response.Headers.TryGetValue("Cache-Control", out var s) || s != "max-age=0, no-store");
 
 					if (allowCaching)
 					{
-#if !DEBUG
-						cache.Set(cacheKey, awaitedResult.Body = body);
-#else
-#endif
+						await _cache.SetAsync(
+							cacheKey,
+							renderedDoc.Body,
+							options: CacheWriteOptions,
+							tags: tags,
+							cancellationToken: ct);
+
+#if DEBUG
 						_logger.LogInformation("Cached '{cacheKey}'", cacheKey);
+#endif
 					}
 
-					if (awaitedResult.Cts != null)
-					{
-						// Cancel the CancellationToken and give a signal to awaiting threads that the page has been rendered. 
-						awaitedResult.Cts.Cancel();
-						AwaitedResults.TryRemove(cacheKey, out _);
-					}
-
-					// Finally write the body to the response.
-
-					await originalBody.WriteAsync(body);
+					return renderedDoc.Body;
 				}
+
+				var originalBody = context.Response.Body;
+
+				var body = allowCaching ?
+					await _cache.GetOrCreateAsync(cacheKey, factory, CacheReadThroughOptions, cancellationToken: context.RequestAborted) :
+					await getAndRenderDocument(context.RequestAborted).ContinueWith(t => t.Result.Body, context.RequestAborted);
+
+				context.Response.Body = originalBody;
+				context.Response.Headers.ContentType = "text/html; charset=utf-8";
+
+				await originalBody.WriteAsync(body);
 			}
 			else
 			{

@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using HCms.Content.Repo;
 using HCms.Content.ViewModels;
 using HCms.Dto;
+using Microsoft.Extensions.Caching.Hybrid;
+using System.Runtime.CompilerServices;
 
 
 namespace DemoSite.Services
@@ -22,10 +24,12 @@ namespace DemoSite.Services
 	/// </summary>
 	public class CmsContentService(
 		IContentRepo repo, 
-		IMemoryCache cache, 
+		HybridCache cache, 
 		IAuthorizationService authorizationService,
 		ILogger<CmsContentService> logger)
 	{
+		public const string CMS_CACHE_TAG = "index";
+
 		const string EVENT_DOC_CREATE = "on_doc_create";
 		const string EVENT_DOC_CHANGE = "on_doc_change";
 		const string EVENT_DOC_UPDATE = "on_doc_update";
@@ -37,13 +41,13 @@ namespace DemoSite.Services
 
 
 		readonly IContentRepo _repo = repo;
-		readonly IMemoryCache _cache = cache;
+		readonly HybridCache _cache = cache;
 		readonly IAuthorizationService _authorizationService = authorizationService;
 		readonly ILogger<CmsContentService> _logger = logger;
 
 		public Document RequestedDocument { get; private set; }
 		public IContentRepo Repo { get => _repo; }
-		public IMemoryCache Cache { get => _cache; }
+		public HybridCache Cache { get => _cache; }
 
 		public enum AuthResult
 		{
@@ -212,7 +216,7 @@ namespace DemoSite.Services
 		/// </summary>
 		/// <param name="model">The event payload containing the event type and any associated data. 
 		/// The <see cref="EventPayload.Event"/> property determines the type of cache update to perform.</param>
-		public void UpdateCache(EventPayload model)
+		public async Task UpdateCache(EventPayload model)
 		{
 			switch (model.Event)
 			{
@@ -244,8 +248,8 @@ namespace DemoSite.Services
 							path = string.IsNullOrEmpty(con.Path) ? "/" : con.Path;
 							root = con.Root;
 
-							_cache.Remove($"{root}-dark-{path}");
-							_cache.Remove($"{root}-light-{path}");
+							await _cache.RemoveAsync($"{root}-dark-{path}");
+							await _cache.RemoveAsync($"{root}-light-{path}");
 
 							_logger.LogInformation("Cache record for '{root}-dark&light-{path}' has been removed", root, path);
 						}
@@ -259,13 +263,9 @@ namespace DemoSite.Services
 					break;
 			}
 
+			await _cache.RemoveByTagAsync(CMS_CACHE_TAG);
 
-			if (_cache is MemoryCache memoryCache)
-			{
-				memoryCache.Clear();
-
-				_logger.LogInformation("Entire cache has been cleared");
-			}
+			_logger.LogInformation("Entire cache has been cleared");
 		}
 
 	}

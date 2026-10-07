@@ -155,10 +155,11 @@ namespace DemoSite.Services
 		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
-				var payload = System.Text.Json.JsonSerializer.Deserialize<EventPayload>(message);
+				byte[] bytes = message;
+				var payload = System.Text.Json.JsonSerializer.Deserialize<EventPayload>(bytes);
 
 				var cmsService = scope.ServiceProvider.GetService<CmsContentService>();
-				cmsService?.UpdateCache(payload);
+				_ = cmsService?.UpdateCache(payload);
 
 				var s3Service = scope.ServiceProvider.GetService<S3MediaStorage>();
 				s3Service?.UpdateCache(payload);
@@ -167,7 +168,7 @@ namespace DemoSite.Services
 			_logger.LogInformation("Message received from Redis Pub/Sub.");
 		}
 
-		public Task RabbitEventHandler(object sender, BasicDeliverEventArgs ea)
+		public async Task RabbitEventHandler(object sender, BasicDeliverEventArgs ea)
 		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
@@ -176,15 +177,13 @@ namespace DemoSite.Services
 				var payload = System.Text.Json.JsonSerializer.Deserialize<EventPayload>(message);
 
 				var cmsService = scope.ServiceProvider.GetService<CmsContentService>();
-				cmsService?.UpdateCache(payload);
+				await cmsService?.UpdateCache(payload);
 
 				var s3Service = scope.ServiceProvider.GetService<S3MediaStorage>();
 				s3Service?.UpdateCache(payload);
 			}
 
 			_logger.LogInformation("Message received from RabbitMQ.");
-
-			return Task.CompletedTask;
 		}
 
 		public async Task StopAsync(CancellationToken cancellationToken)
