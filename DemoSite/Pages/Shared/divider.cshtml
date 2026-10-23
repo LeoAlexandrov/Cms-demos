@@ -5,4 +5,4 @@
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
 }
 
-<hr id="@id" class="hr @(Model.Props.look == "alternative" ? "hr-blurry" : null) @Model.BasicCssClass @extraFragmentClass" />
+<hr id="@Html.Raw(id)" class="hr @(Model.Props.look == "alternative" ? "hr-blurry" : null) @Model.BasicCssClass @extraFragmentClass" />

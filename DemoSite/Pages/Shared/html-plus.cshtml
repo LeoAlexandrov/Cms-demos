@@ -8,7 +8,7 @@
 	int n = items.Length;
 }
 
-<div id="@id" class="@Model.BasicCssClass @extraFragmentClass">
+<div id="@Html.Raw(id)" class="@Model.BasicCssClass @extraFragmentClass">
 	@for (int i = 0; i < n; i++)
 	{
 		var pict = items[i].picture;

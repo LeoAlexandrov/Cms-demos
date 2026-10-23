@@ -47,7 +47,7 @@
 	</style>
 }
 
-<div id="@id" class="card @Model.BasicCssClass @fullHeightCls @isOverCardCls @textOnImgCls @featuredCls">
+<div id="@Html.Raw(id)" class="card @Model.BasicCssClass @fullHeightCls @isOverCardCls @textOnImgCls @featuredCls">
 	@if (horizontal && !isOver && pict != null)
 	{
 		<div class="row gx-4">

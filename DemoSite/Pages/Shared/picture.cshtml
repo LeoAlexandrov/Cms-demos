@@ -39,5 +39,5 @@
 			<source media="@s.media" srcset="@s.srcset" type="@s.type" />
 		}
 	}
-	<img id="@id" class="@Model.BasicCssClass @floatCls @imgClass @extraFragmentClass" src="@src" alt="@alt" width="@width" height="@height" srcset="@srcset" sizes="@sizes" />
+	<img id="@Html.Raw(id)" class="@Model.BasicCssClass @floatCls @imgClass @extraFragmentClass" src="@src" alt="@alt" width="@width" height="@height" srcset="@srcset" sizes="@sizes" />
 </picture>

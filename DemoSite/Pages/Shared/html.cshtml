@@ -10,7 +10,7 @@
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
 }
 
-<div id="@id" class="@Model.BasicCssClass @extraFragmentClass">
+<div id="@Html.Raw(id)" class="@Model.BasicCssClass @extraFragmentClass">
 @if (pict != null)
 {
 	@await Html.PartialAsync("picture", new Fragment(Model, "picture", pict), ViewData)

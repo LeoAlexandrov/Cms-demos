@@ -18,7 +18,7 @@
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
 }
 
-<div id="@id" class="@Model.BasicCssClass @extraFragmentClass">
+<div id="@Html.Raw(id)" class="@Model.BasicCssClass @extraFragmentClass">
 	<ul class="nav nav-tabs" role="tablist">
 		@foreach (var tab in tabs)
 		{
@@ -31,9 +31,9 @@
 	
 			<li class="nav-item" role="presentation">
 				<a data-mdb-tab-init
-					id="@id-tab-@i"
+					id="@Html.Raw(id)-tab-@i"
 					class="nav-link @(isActive ? "active" : null)"
-					href="#@id-tabs-@i" role="tab">
+					href="#@Html.Raw(id)-tabs-@i" role="tab">
 					@if (!string.IsNullOrEmpty(tab.icon))
 					{
 						<i class="@tab.icon fa-fw me-2"></i>
@@ -53,10 +53,10 @@
 }
 
 <!-- Tabs content -->
-	<div id="@id-content" class="tab-content mt-3">
+	<div id="@Html.Raw(id)-content" class="tab-content mt-3">
 		@foreach (var f in Model.Children)
 		{
-			<div id="@id-tabs-@i" class="tab-pane fade show @(i == activeIdx ? "active" : null)" role="tabpanel">
+			<div id="@Html.Raw(id)-tabs-@i" class="tab-pane fade show @(i == activeIdx ? "active" : null)" role="tabpanel">
 				@await Html.PartialAsync(f.XmlName, f, ViewData)
 			</div>
 	

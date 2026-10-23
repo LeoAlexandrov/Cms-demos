@@ -5,6 +5,6 @@
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
 }
 
-<div id="@id" class="@Model.BasicCssClass @extraFragmentClass">
+<div id="@Html.Raw(id)" class="@Model.BasicCssClass @extraFragmentClass">
 @Html.Raw(Model.Props.ToString())
 </div>

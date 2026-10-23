@@ -29,7 +29,7 @@
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
 }
 
-<div id="@id" class="@cls @Model.BasicCssClass @extraFragmentClass">
+<div id="@Html.Raw(id)" class="@cls @Model.BasicCssClass @extraFragmentClass">
 	@for(int i = 0; i < n; i++)
 	{
 		cls = colDivClass(columns[i]);

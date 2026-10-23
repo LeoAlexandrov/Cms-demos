@@ -48,7 +48,7 @@
 }
 
 
-<div id="@id" class="@cls @Model.BasicCssClass">
+<div id="@Html.Raw(id)" class="@cls @Model.BasicCssClass">
 @if (Model.Children != null)
 {
 	foreach (var f in Model.Children)

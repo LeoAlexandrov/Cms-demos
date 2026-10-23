@@ -6,20 +6,20 @@
 	<ImplicitUsings>disable</ImplicitUsings>
 	<PublishTrimmed>False</PublishTrimmed>
 	<PublishAot>False</PublishAot>
-	<AssemblyVersion>0.5.0</AssemblyVersion>
-	<FileVersion>0.5.0</FileVersion>
+	<AssemblyVersion>0.5.1</AssemblyVersion>
+	<FileVersion>0.5.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AWSSDK.S3" Version="4.0.104.1" />
+	<PackageReference Include="AWSSDK.S3" Version="4.0.104.6" />
 	<PackageReference Include="HCms" Version="1.1.0" />
 	<PackageReference Include="HCms.Content.ViewModels" Version="1.1.0" />
-	<PackageReference Include="Markdig" Version="1.4.0" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
-	<PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="10.10.0" />
+	<PackageReference Include="Markdig" Version="1.4.2" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
+	<PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="10.11.0" />
 	<PackageReference Include="RabbitMQ.Client" Version="7.2.2" />
-	<PackageReference Include="StackExchange.Redis" Version="3.3.1" />
+	<PackageReference Include="StackExchange.Redis" Version="3.4.20" />
   </ItemGroup>
 
   <Import Project="..\Common\Common.projitems" Label="Shared" />

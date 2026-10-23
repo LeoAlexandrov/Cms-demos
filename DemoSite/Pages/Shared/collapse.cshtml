@@ -18,16 +18,15 @@
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
 	string collapseCls = uncollapsed ? "show" : null;
 	string chevronCls = uncollapsed ? "fa-chevron-up" : "fa-chevron-down";
-	string action = "collapse_" + id;
 }
 
-<button id="@id" class="@Model.BasicCssClass @cls @extraFragmentClass mb-4" type="button"
-		data-mdb-collapse-init data-mdb-ripple-init data-mdb-target="#@action"
-		onclick="document.getElementById('@(id + "_chevron")').className=document.getElementById('@id').getAttribute('aria-expanded')=='true' ? 'fa-solid fa-fw fa-chevron-up' : 'fa-solid fa-fw fa-chevron-down'">
-	@title <i id="@(id + "_chevron")" class="fa-solid fa-fw @chevronCls"></i>
+<button id="@Html.Raw(id)" class="@Model.BasicCssClass @cls @extraFragmentClass mb-4" type="button"
+		data-mdb-collapse-init data-mdb-ripple-init data-mdb-target="#collapse_@Html.Raw(id)"
+		onclick="document.getElementById('@Html.Raw(id)_chevron)').className=document.getElementById('@Html.Raw(id)').getAttribute('aria-expanded')=='true' ? 'fa-solid fa-fw fa-chevron-up' : 'fa-solid fa-fw fa-chevron-down'">
+	@title <i id="@Html.Raw(id)_chevron)" class="fa-solid fa-fw @chevronCls"></i>
 </button>
 
-<div id="@action" class="collapse @collapseCls">
+<div id="collapse_@Html.Raw(id)" class="collapse @collapseCls">
 	@if (Model.Children != null)
 	{
 		foreach (var f in Model.Children)

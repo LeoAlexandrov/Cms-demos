@@ -27,12 +27,12 @@
 	}
 }
 
-<div id="@id" class="carousel slide carousel-fade breakout @Model.BasicCssClass @extraFragmentClass" data-mdb-ride="carousel" data-mdb-interval="@sInterval" data-mdb-carousel-init>
+<div id="@Html.Raw(id)" class="carousel slide carousel-fade breakout @Model.BasicCssClass @extraFragmentClass" data-mdb-ride="carousel" data-mdb-interval="@sInterval" data-mdb-carousel-init>
 
 	<div class="carousel-indicators">
 		@for (int i = 0; i < n; i++)
 		{
-			<button type="button" data-mdb-target="#@id" data-mdb-slide-to="@i" class="@(activeIdx == i-1 ? "active" : null)" aria-current="true"></button>
+		<button type="button" data-mdb-target="#@Html.Raw(id)" data-mdb-slide-to="@i" class="@(activeIdx == i - 1 ? "active" : null)" aria-current="true"></button>
 		}
 	</div>
 
@@ -67,13 +67,13 @@
 
 	@if (Model.Props.appearance.buttons)
 	{
-		<button class="carousel-control-prev" type="button" data-mdb-target="#@id" data-mdb-slide="prev">
-			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-			<span class="visually-hidden">Previous</span>
-		</button>
-		<button class="carousel-control-next" type="button" data-mdb-target="#@id" data-mdb-slide="next">
-			<span class="carousel-control-next-icon" aria-hidden="true"></span>
-			<span class="visually-hidden">Next</span>
-		</button>
+	<button class="carousel-control-prev" type="button" data-mdb-target="#@Html.Raw(id)" data-mdb-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="visually-hidden">Previous</span>
+	</button>
+	<button class="carousel-control-next" type="button" data-mdb-target="#@Html.Raw(id)" data-mdb-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="visually-hidden">Next</span>
+	</button>
 	}
 </div>

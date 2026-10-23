@@ -58,7 +58,7 @@
 	string extraFragmentClass = Model.Attributes?.GetValueOrDefault("bootstrap:class");
 }
 
-<div id="@id" class="features-@look @Model.BasicCssClass @extraFragmentClass">
+<div id="@Html.Raw(id)" class="features-@look @Model.BasicCssClass @extraFragmentClass">
 	@if (isAlternative)
 	{
 		@Html.Raw("<div class=\"row gx-5\">")
