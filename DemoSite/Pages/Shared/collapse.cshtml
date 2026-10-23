@@ -22,8 +22,8 @@
 
 <button id="@Html.Raw(id)" class="@Model.BasicCssClass @cls @extraFragmentClass mb-4" type="button"
 		data-mdb-collapse-init data-mdb-ripple-init data-mdb-target="#collapse_@Html.Raw(id)"
-		onclick="document.getElementById('@Html.Raw(id)_chevron)').className=document.getElementById('@Html.Raw(id)').getAttribute('aria-expanded')=='true' ? 'fa-solid fa-fw fa-chevron-up' : 'fa-solid fa-fw fa-chevron-down'">
-	@title <i id="@Html.Raw(id)_chevron)" class="fa-solid fa-fw @chevronCls"></i>
+		onclick="document.getElementById('@Html.Raw(id)_chevron').className=document.getElementById('@Html.Raw(id)').getAttribute('aria-expanded')=='true' ? 'fa-solid fa-fw fa-chevron-up' : 'fa-solid fa-fw fa-chevron-down'">
+	@title <i id="@Html.Raw(id)_chevron" class="fa-solid fa-fw @chevronCls"></i>
 </button>
 
 <div id="collapse_@Html.Raw(id)" class="collapse @collapseCls">
